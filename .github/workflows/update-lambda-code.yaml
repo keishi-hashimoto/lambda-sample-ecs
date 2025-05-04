@@ -52,21 +52,31 @@ jobs:
           role-session-name: GitHubActions
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Store Registory URI
+        if: env.continue == 'true'
+        run: |
+          echo "REGISTRY_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com" >> $GITHUB_ENV
+
+      - name: Store Image URI
+        if: env.continue == 'true'
+        run: |
+          echo "IMAGE_URI=${REGISTRY_URI}/${{ secrets.REPO_NAME }}:latest" >> $GITHUB_ENV
+
       - name: Add new tag
         if: env.continue == 'true'
         run: |
-          docker tag "${{ secrets.IMAGE_NAME }}:${VERSION}" "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME }}:latest"
+          docker tag "${{ secrets.IMAGE_NAME }}:${VERSION}" "${IMAGE_URI}"
 
       - name: Push to ECR
         if: env.continue == 'true'
         run: |
-          aws ecr get-login-password | docker login --username AWS --password-stdin "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com"
-          docker push "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME }}:latest"
+          aws ecr get-login-password | docker login --username AWS --password-stdin "${REGISTRY_URI}"
+          docker push "${IMAGE_URI}"
 
       - name: Update Lambda function
         if: env.continue == 'true'
         run: |
-          aws lambda update-function-code --function-name "${{ secrets.FUNCTION_NAME }}" --image-uri "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME }}:latest" --publish
+          aws lambda update-function-code --function-name "${{ secrets.FUNCTION_NAME }}" --image-uri "${IMAGE_URI}" --publish
 
       - name: Configure git
         if: env.continue == 'true'
