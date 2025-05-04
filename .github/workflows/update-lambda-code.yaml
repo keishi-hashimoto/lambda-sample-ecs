@@ -23,6 +23,9 @@ jobs:
       - name: Check version
         run: echo "${VERSION}"
 
+      - name: Check head_ref
+        run: echo "${{ github.head_ref }}"
+
       - name: Build Image
         if: github.head_ref == env.VERSION
         run: |
