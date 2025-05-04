@@ -20,6 +20,9 @@ description = "Compile requirements from pyproject.toml to requirements.txt"
 [tasks.build]
 run = "sudo docker buildx build --platform linux/amd64 --provenance=false -t \"${IMAGE_NAME}\":\"${TAG}\" ."
 
+[tasks.new-version]
+run = "utils/create-new-release-branch.sh"
+
 [tasks.run-local]
 run = "sudo docker run --platform linux/amd64 -p 9000:8080 \"${IMAGE_NAME}\":\"${TAG}\""
 

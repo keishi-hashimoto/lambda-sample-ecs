@@ -78,3 +78,20 @@ If your want to stop locally running image, then
 ```sh
 mise run stop
 ```
+
+# Create new release branch
+
+Run
+
+```sh
+mise run new-version "${version}"
+```
+
+`version` must be specified like `v1.0.0` and newer than current version specified in `pyproject.toml`.
+
+In this command, following tasks are executed.
+
+1. New release branch `${version}` is created.
+   - **Base branch must be main**
+2. `version` in `pyproject.toml` is updated.
+3. File change in step「2」is commited and pushed to GitHub.
