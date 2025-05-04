@@ -53,7 +53,7 @@ git switch -c "${NEW_VERSION}"
 # pyproject.toml の version を更新
 info "Updating version in pyproject.toml to \"${NEW_VERSION}\""
 cp pyproject.toml{,.bak}
-sed -i "s/^version = \"${CURRENT_VERSION}\"/version = \"${NEW_VERSION}\"/" pyproject.toml
+sed -i "s/^version = \"${CURRENT_VERSION}\"/version = \"${NEW_VERSION#v}\"/" pyproject.toml
 
 # git commit して push
 git add .
