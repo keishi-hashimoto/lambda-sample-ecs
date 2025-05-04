@@ -20,23 +20,26 @@ mise install
 uv sync
 ```
 
-## 3. Install and setup docker
-
-```sh
-mise run setup-docker
-```
-
-# Specify environmental variables
-
-For following tasks such as ... and ..., you need to specify environmental variables.
-
-Do
+## 3. Specify environmental variables
 
 ```sh
 cp .env.sample .env
 ```
 
-and then fill `.env` file.
+and then fill following variables in `.env` file.
+
+- AWS_ACCOUNT_ID
+- AWS_DEFAULT_REGION
+
+> [!NOTE]
+>
+> Other variables in this file is needed for following steps such as [Build and test local].
+
+## 4. Install and setup docker
+
+```sh
+mise run setup-docker
+```
 
 # Build and test local
 
