@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -Ceu pipefail
+set -Ceu -o pipefail
 
 WORKING_DIR="$(dirname "$(dirname "$(realpath "${0}")")")"
 cd "${WORKING_DIR}"
