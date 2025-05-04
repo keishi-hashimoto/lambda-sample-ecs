@@ -63,6 +63,11 @@ jobs:
           aws ecr get-login-password | docker login --username AWS --password-stdin "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com"
           docker push "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME }}:latest"
 
+      - name: Update Lambda function
+        if: env.continue == 'true'
+        run: |
+          aws lambda update-function-code --function-name "${{ secrets.FUNCTION_NAME }}" --image-uri "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME }}:latest" --publish
+
       - name: Configure git
         if: env.continue == 'true'
         run: |
