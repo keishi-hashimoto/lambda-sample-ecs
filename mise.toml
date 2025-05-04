@@ -1,0 +1,42 @@
+[tools]
+aws-cli = "2.27.3"
+uv = "0.5.26"
+
+[env]
+_.file = ".env"
+AWS_ECR_DISABLE_CACHE = "true"
+
+[tasks.setup-docker]
+run = [
+    "tools/install-docker.sh",
+    "tools/install-credential-helper.sh",
+    "tools/configure-creds-store.sh",
+]
+
+[tasks.compile]
+run = "uv pip compile pyproject.toml > requirements.txt"
+description = "Compile requirements from pyproject.toml to requirements.txt"
+
+[tasks.build]
+run = "sudo docker buildx build --platform linux/amd64 --provenance=false -t \"${IMAGE_NAME}\":\"${TAG}\" ."
+
+[tasks.run-local]
+run = "sudo docker run --platform linux/amd64 -p 9000:8080 \"${IMAGE_NAME}\":\"${TAG}\""
+
+[tasks.stop]
+run = "sudo docker ps --format json | jq .ID | sudo xargs docker stop"
+
+[tasks.test-local]
+run = "curl \"http://localhost:9000/2015-03-31/functions/function/invocations\" -d '{}'"
+
+[tasks.ecr-logout]
+run = "docker logout ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+
+[tasks.create-repo]
+run = "aws ecr create-repository --repository-name ${REPO_NAME} --image-scanning-configuration scanOnPush=true --image-tag-mutability MUTABLE"
+
+[tasks.tag]
+run = "docker tag ${IMAGE_NAME}:${TAG} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${REPO_NAME}:latest"
+
+[tasks.push]
+run = "docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${REPO_NAME}:latest"
