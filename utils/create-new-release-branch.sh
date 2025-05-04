@@ -1,5 +1,10 @@
 #!/bin/bash
 
+set -Ceu pipefail
+
+WORKING_DIR="$(dirname "$(dirname "$(realpath "${0}")")")"
+cd "${WORKING_DIR}"
+
 BASE_BRANCH="main"
 CURRENT_BRANCH="$(git branch --show-current)"
 
@@ -17,7 +22,7 @@ if [ ! "${CURRENT_BRANCH}" = "${BASE_BRANCH}" ]; then
 fi
 
 NEW_VERSION="${1}"
-CURRENT_VERSION="$(grep "version =" pyproject.toml | sed -E 's/^version\s=\s\"([0-9]+\.[0-9]+\.[0-9]+)\"/\1/')"
+CURRENT_VERSION="$(utils/get_current_version.sh)"
 
 get_comparable_version() {
   local version="${1}"
