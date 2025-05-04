@@ -29,8 +29,8 @@ run = "sudo docker ps --format json | jq .ID | sudo xargs docker stop"
 [tasks.test-local]
 run = "curl \"http://localhost:9000/2015-03-31/functions/function/invocations\" -d '{}'"
 
-[tasks.ecr-logout]
-run = "docker logout ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+[tasks.test-remote]
+run = "aws lambda invoke --function-name \"${FUNCTION_NAME}\" response.json"
 
 [tasks.create-repo]
 run = "aws ecr create-repository --repository-name ${REPO_NAME} --image-scanning-configuration scanOnPush=true --image-tag-mutability MUTABLE"
@@ -40,3 +40,6 @@ run = "docker tag ${IMAGE_NAME}:${TAG} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_R
 
 [tasks.push]
 run = "docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${REPO_NAME}:latest"
+
+[tasks.update-function-code]
+run = "aws lambda update-function-code --function-name ${FUNCTION_NAME} --image-uri ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${REPO_NAME}:latest"
