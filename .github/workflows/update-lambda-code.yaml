@@ -19,15 +19,17 @@ jobs:
       - name: Save current version
         run: |
           echo "VERSION=v$(utils/get_current_version.sh)" >> $GITHUB_ENV
-          echo "VERSION=${VERSION}"
+
+      - name: Check version
+        run: echo "${VERSION}"
 
       - name: Build Image
-        if: github.head_ref == "${VERSION}"
+        if: github.head_ref == env.VERSION
         run: |
           docker buildx build --platform linux/amd64 --provenance=false -t "${secrets.IMAGE_NAME}":"${VERSION}" .
 
       - name: Configure AWS credentials
-        if: github.head_ref == "${VERSION}"
+        if: github.head_ref == env.VERSION
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
@@ -35,24 +37,24 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Add new tag
-        if: github.head_ref == "${VERSION}"
+        if: github.head_ref == env.VERSION
         run: |
           docker tag "${secrets.IMAGE_NAME}:${VERSION}" "${secrets.AWS_ACCOUNT_ID}.dkr.ecr.${secrets.AWS_REGION}.amazonaws.com/${secrets.REPO_NAME}:latest"
 
       - name: Push to ECR
-        if: github.head_ref == "${VERSION}"
+        if: github.head_ref == env.VERSION
         run: |
           aws ecr get-login-password | docker login --username AWS --password-stdin "${secrets.AWS_ACCOUNT_ID}.dkr.ecr.${secrets.AWS_REGION}.amazonaws.com"
           docker push "${secrets.AWS_ACCOUNT_ID}.dkr.ecr.${secrets.AWS_REGION}.amazonaws.com/${secrets.REPO_NAME}:latest"
 
       - name: Configure git
-        if: github.head_ref == "${VERSION}"
+        if: github.head_ref == env.VERSION
         run: |
           git config user.name "GitHub Actions"
           git config user.email "gha@example.com"
 
       - name: Add new tag
-        if: github.head_ref == "${VERSION}"
+        if: github.head_ref == env.VERSION
         run: |
           git tag "${VERSION}"
           git push origin "${VERSION}"
