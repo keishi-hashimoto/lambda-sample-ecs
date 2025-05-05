@@ -193,7 +193,7 @@ def handler(event: S3Event, context: LambdaContext):
 
     # CSV ファイルから工数の生データを読み込み
     s3_info = event["Records"][0]["s3"]
-    df = read_csv_file(bucket=s3_info["bucket"], object=s3_info["object"])
+    df = read_csv_file(bucket=s3_info["bucket"], key=s3_info["object"])
 
     validate_project_code(df)
 
