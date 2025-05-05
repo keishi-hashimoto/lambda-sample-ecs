@@ -1,0 +1,64 @@
+from collections import OrderedDict
+
+import pytest
+
+import sys
+
+sys.path.append("..")
+from lambda_function import add_project_name_to_df
+import polars as pl
+
+from typing import TypeAlias
+
+Df: TypeAlias = pl.DataFrame
+
+DUMMY_PROJECT_MAP = {"A001": "保守案件1", "B002": "開発案件A"}
+
+
+@pytest.mark.parametrize(
+    argnames=["df", "expected"],
+    argvalues=[
+        pytest.param(
+            Df(
+                {
+                    "Pコード": ["A001"],
+                    "名前": ["太郎"],
+                    "工数": [4.0],
+                }
+            ),
+            Df(
+                {
+                    "Pコード": ["A001"],
+                    "案件名": ["保守案件1"],
+                    "名前": ["太郎"],
+                    "工数": [4.0],
+                }
+            ),
+            id="Only one row",
+        ),
+        pytest.param(
+            Df(
+                {
+                    "Pコード": ["A001", "B002"],
+                    "名前": ["太郎", "太郎"],
+                    "工数": [4.0, 2.0],
+                }
+            ),
+            Df(
+                {
+                    "Pコード": ["A001", "B002"],
+                    "案件名": ["保守案件1", "開発案件A"],
+                    "名前": ["太郎", "太郎"],
+                    "工数": [4.0, 2.0],
+                }
+            ),
+            id="Multiple Projects",
+        ),
+    ],
+)
+def test_normal(df: Df, expected: Df):
+    actual = add_project_name_to_df(df, DUMMY_PROJECT_MAP)
+    # 順番が大切なので OrderedDict で比較する
+    assert [OrderedDict(a) for a in actual.to_dicts()] == [
+        OrderedDict(e) for e in expected.to_dicts()
+    ]

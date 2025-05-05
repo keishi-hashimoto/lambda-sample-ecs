@@ -46,3 +46,6 @@ run = "docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
 
 [tasks.update-function-code]
 run = "aws lambda update-function-code --function-name ${FUNCTION_NAME} --image-uri ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${REPO_NAME}:latest"
+
+[tasks.pytest]
+run = "uv run pytest"
