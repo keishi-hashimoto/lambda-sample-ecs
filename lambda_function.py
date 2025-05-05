@@ -89,11 +89,15 @@ class WeeklyProjectReport:
 
 
 def read_csv_file(bucket: str, key: str) -> pl.DataFrame:
-    df = pl.read_csv(
-        f"s3://{bucket}/{key}", schema_overrides={COL_MAN_HOUR: pl.Float32}
-    )
-    logger.info(df)
-    return df
+    try:
+        df = pl.read_csv(
+            f"s3://{bucket}/{key}", schema_overrides={COL_MAN_HOUR: pl.Float32}
+        )
+        logger.info(df)
+        return df
+    except Exception as e:
+        logger.error(e)
+        raise e
 
 
 def validate_project_code(df: pl.DataFrame, project_map: dict[str, str] = PROJECT_MAP):
