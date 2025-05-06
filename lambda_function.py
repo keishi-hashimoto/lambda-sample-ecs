@@ -55,7 +55,7 @@ class BaseManHour:
 @dataclass
 class ManHour(BaseManHour):
     def __str__(self) -> str:
-        return f"{self.name} さん: {self.hour} 時間"
+        return f"{self.name} さん: {round(self.hour, 2)} 時間"
 
 
 @dataclass
@@ -63,7 +63,7 @@ class TotalManHour(BaseManHour):
     name: str = field(default="合計", init=False)
 
     def __str__(self) -> str:
-        return f"**{self.name}: {self.hour} 時間**"
+        return f"**{self.name}: {round(self.hour, 2)} 時間**"
 
 
 @dataclass
