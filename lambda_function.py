@@ -10,7 +10,6 @@ import polars as pl
 
 logger = Logger()
 
-PROJECT_MAP = {"A001": "保守案件1", "B002": "開発案件A"}
 COL_PROJECT_CODE: Final[str] = "Pコード"
 COL_MEMBER_NAME: Final[str] = "名前"
 COL_MAN_HOUR: Final[str] = "工数"
@@ -100,8 +99,12 @@ def read_csv_file(bucket: str, key: str) -> pl.DataFrame:
         raise e
 
 
-def validate_project_code(df: pl.DataFrame, project_map: dict[str, str] = PROJECT_MAP):
-    invalid_rows = df.filter(pl.col(COL_PROJECT_CODE).is_in(project_map).not_())
+def validate_project_code(df: pl.DataFrame, project_map_df: pl.DataFrame):
+    invalid_rows = df.filter(
+        pl.col(COL_PROJECT_CODE)
+        .is_in(project_map_df[COL_PROJECT_CODE].to_list())
+        .not_()
+    )
 
     if not invalid_rows.is_empty():
         msg = "\n".join(
@@ -124,14 +127,16 @@ def process_df(df: pl.DataFrame) -> pl.DataFrame:
 
 
 def add_project_name_to_df(
-    df: pl.DataFrame, project_map: dict[str, str] = PROJECT_MAP
+    df: pl.DataFrame,
+    project_map_df: pl.DataFrame,
 ) -> pl.DataFrame:
-    df_with_project_name = df.insert_column(
-        1,
-        pl.col(COL_PROJECT_CODE)
-        .replace(project_map)
-        .alias(ADDITIONAL_CON_PROJECT_NAME),
-    )
+    sql = f"""
+        select df.{COL_PROJECT_CODE}, project_map_df.{ADDITIONAL_CON_PROJECT_NAME},
+        df.{COL_MEMBER_NAME}, df.{COL_MAN_HOUR}
+        from df join project_map_df
+        on df.{COL_PROJECT_CODE} = project_map_df.{COL_PROJECT_CODE}
+    """
+    df_with_project_name = pl.sql(sql).collect()
     logger.info(df_with_project_name)
     return df_with_project_name
 
@@ -199,10 +204,14 @@ def handler(event: S3Event, context: LambdaContext):
     s3_info = event["Records"][0]["s3"]
     df = read_csv_file(bucket=s3_info["bucket"]["name"], key=s3_info["object"]["key"])
 
-    validate_project_code(df)
+    project_map_bucket = environ["PROJECT_MAP_BUCKET"]
+    project_map_key = environ["PROJECT_MAP_KEY"]
+    project_map_df = read_csv_file(bucket=project_map_bucket, key=project_map_key)
+
+    validate_project_code(df, project_map_df)
 
     processed_df = process_df(df)
-    df_with_project_name = add_project_name_to_df(processed_df)
+    df_with_project_name = add_project_name_to_df(processed_df, project_map_df)
 
     # TODO: 正規メンバー以外に工数が計上されている場合には警告文を出力する
 
