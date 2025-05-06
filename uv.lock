@@ -258,7 +258,7 @@ wheels = [
 
 [[package]]
 name = "lambda-sample-ecs"
-version = "0.3.3"
+version = "0.4.0"
 source = { virtual = "." }
 dependencies = [
     { name = "aws-lambda-powertools", extra = ["aws-sdk"] },
