@@ -99,8 +99,12 @@ def read_csv_file(bucket: str, key: str) -> pl.DataFrame:
         raise e
 
 
-def validate_project_code(df: pl.DataFrame, project_map: dict[str, str] = PROJECT_MAP):
-    invalid_rows = df.filter(pl.col(COL_PROJECT_CODE).is_in(project_map).not_())
+def validate_project_code(df: pl.DataFrame, project_map_df: pl.DataFrame):
+    invalid_rows = df.filter(
+        pl.col(COL_PROJECT_CODE)
+        .is_in(project_map_df[COL_PROJECT_CODE].to_list())
+        .not_()
+    )
 
     if not invalid_rows.is_empty():
         msg = "\n".join(
@@ -202,7 +206,7 @@ def handler(event: S3Event, context: LambdaContext):
     project_map_key = environ["PROJECT_MAP_KEY"]
     project_map_df = read_csv_file(bucket=project_map_bucket, key=project_map_key)
 
-    validate_project_code(df)
+    validate_project_code(df, project_map_df)
 
     processed_df = process_df(df)
     df_with_project_name = add_project_name_to_df(processed_df)
