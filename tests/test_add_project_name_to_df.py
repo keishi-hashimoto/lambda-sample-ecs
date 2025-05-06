@@ -1,5 +1,3 @@
-from collections import OrderedDict
-
 import pytest
 
 import sys
@@ -7,6 +5,7 @@ import sys
 sys.path.append("..")
 from lambda_function import add_project_name_to_df
 import polars as pl
+from polars.testing import assert_frame_equal
 
 from typing import TypeAlias
 
@@ -60,7 +59,4 @@ DUMMY_PROJECT_MAP_DF = Df(
 )
 def test_normal(df: Df, expected: Df):
     actual = add_project_name_to_df(df, DUMMY_PROJECT_MAP_DF)
-    # 順番が大切なので OrderedDict で比較する
-    assert [OrderedDict(a) for a in actual.to_dicts()] == [
-        OrderedDict(e) for e in expected.to_dicts()
-    ]
+    assert_frame_equal(actual, expected)
