@@ -60,6 +60,9 @@ info "Updating version in pyproject.toml to \"${NEW_VERSION}\""
 cp pyproject.toml{,.bak}
 sed -i "s/^version = \"${CURRENT_VERSION}\"/version = \"${NEW_VERSION#v}\"/" pyproject.toml
 
+# uv.lock にも version 更新を反映させるために、uv sync を実行
+uv sync
+
 # git commit して push
 git add .
 git commit -m ":ship: update version to ${NEW_VERSION}"
