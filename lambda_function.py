@@ -10,7 +10,6 @@ import polars as pl
 
 logger = Logger()
 
-PROJECT_MAP = {"A001": "保守案件1", "B002": "開発案件A"}
 COL_PROJECT_CODE: Final[str] = "Pコード"
 COL_MEMBER_NAME: Final[str] = "名前"
 COL_MAN_HOUR: Final[str] = "工数"
