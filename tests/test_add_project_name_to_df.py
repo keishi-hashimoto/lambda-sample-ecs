@@ -1,13 +1,14 @@
-import pytest
-
 import sys
 
+import pytest
+
 sys.path.append("..")
-from lambda_function import add_project_name_to_df
+from typing import TypeAlias
+
 import polars as pl
 from polars.testing import assert_frame_equal
 
-from typing import TypeAlias
+from lambda_function import add_project_name_to_df
 
 Df: TypeAlias = pl.DataFrame
 

@@ -49,3 +49,11 @@ run = "aws lambda update-function-code --function-name ${FUNCTION_NAME} --image-
 
 [tasks.pytest]
 run = "uv run pytest"
+
+[tasks.check-code]
+run = [
+    "uvx isort .",
+    "uvx ruff check --fix .",
+    "uvx ruff format .",
+    "uv run mypy .",
+]

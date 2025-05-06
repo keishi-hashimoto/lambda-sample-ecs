@@ -1,21 +1,21 @@
 from copy import deepcopy
 from dataclasses import dataclass, field
 from os import environ
-from typing import TypedDict, Final
+from typing import Final, TypedDict
 
-from aws_lambda_powertools.utilities.typing import LambdaContext
-from aws_lambda_powertools import Logger
-import requests
 import polars as pl
+import requests
+from aws_lambda_powertools import Logger
+from aws_lambda_powertools.utilities.typing import LambdaContext
 
 logger = Logger()
 
-COL_PROJECT_CODE: Final[str] = "Pコード"
-COL_MEMBER_NAME: Final[str] = "名前"
-COL_MAN_HOUR: Final[str] = "工数"
+COL_PROJECT_CODE: Final = "Pコード"
+COL_MEMBER_NAME: Final = "名前"
+COL_MAN_HOUR: Final = "工数"
 
-ADDITIONAL_CON_PROJECT_NAME: Final[str] = "案件名"
-COL_DT: Final[str] = "日付"
+ADDITIONAL_CON_PROJECT_NAME: Final = "案件名"
+COL_DT: Final = "日付"
 
 
 class S3ObjectInfo(TypedDict):
@@ -169,7 +169,7 @@ def _upsert(
 
 
 def df_to_project_report(df: pl.DataFrame) -> list[WeeklyProjectReport]:
-    dicts_from_df: list[DictFromDf] = df.to_dicts()
+    dicts_from_df: list[DictFromDf] = df.to_dicts()  # type: ignore [assignment]
     weekly_project_report_list: list[WeeklyProjectReport] = []
     for d in dicts_from_df:
         weekly_project_report_list = _upsert(d, weekly_project_report_list)
