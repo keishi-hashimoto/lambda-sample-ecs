@@ -10,12 +10,12 @@ import polars as pl
 
 logger = Logger()
 
-COL_PROJECT_CODE: Final[str] = "Pコード"
-COL_MEMBER_NAME: Final[str] = "名前"
-COL_MAN_HOUR: Final[str] = "工数"
+COL_PROJECT_CODE: Final = "Pコード"
+COL_MEMBER_NAME: Final = "名前"
+COL_MAN_HOUR: Final = "工数"
 
-ADDITIONAL_CON_PROJECT_NAME: Final[str] = "案件名"
-COL_DT: Final[str] = "日付"
+ADDITIONAL_CON_PROJECT_NAME: Final = "案件名"
+COL_DT: Final = "日付"
 
 
 class S3ObjectInfo(TypedDict):
