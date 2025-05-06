@@ -1,5 +1,6 @@
 import pytest
 import polars as pl
+from polars.testing import assert_frame_equal
 from typing import TypeAlias
 
 import sys
@@ -132,4 +133,4 @@ base = {
 )
 def test(df: Df, expected: Df):
     actual = process_df(df)
-    assert actual.to_dicts() == expected.to_dicts()
+    assert_frame_equal(actual, expected)
