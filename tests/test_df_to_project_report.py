@@ -111,6 +111,6 @@ Df: TypeAlias = pl.DataFrame
         ),
     ],
 )
-def test(df: Df, expected: WeeklyProjectReport):
+def test(df: Df, expected: list[WeeklyProjectReport]):
     actual = df_to_project_report(df)
     assert actual == expected
