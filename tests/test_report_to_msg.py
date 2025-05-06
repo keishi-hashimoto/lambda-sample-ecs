@@ -1,12 +1,14 @@
-import pytest
-from textwrap import dedent
 import sys
+from textwrap import dedent
+
+import pytest
 
 sys.path.append("..")
-from lambda_function import report_to_msg, WeeklyProjectReport, ManHour
+from typing import TypeAlias
+
 import polars as pl
 
-from typing import TypeAlias
+from lambda_function import ManHour, WeeklyProjectReport, report_to_msg
 
 Df: TypeAlias = pl.DataFrame
 

@@ -1,12 +1,13 @@
-import pytest
-
 import sys
 
+import pytest
+
 sys.path.append("..")
-from lambda_function import validate_project_code
+from typing import TypeAlias
+
 import polars as pl
 
-from typing import TypeAlias
+from lambda_function import validate_project_code
 
 Df: TypeAlias = pl.DataFrame
 

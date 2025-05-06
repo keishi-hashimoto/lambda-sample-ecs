@@ -1,9 +1,9 @@
-import pytest
-import polars as pl
-from polars.testing import assert_frame_equal
+import sys
 from typing import TypeAlias
 
-import sys
+import polars as pl
+import pytest
+from polars.testing import assert_frame_equal
 
 sys.path.append("..")
 from lambda_function import process_df

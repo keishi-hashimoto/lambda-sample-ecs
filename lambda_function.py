@@ -1,12 +1,12 @@
 from copy import deepcopy
 from dataclasses import dataclass, field
 from os import environ
-from typing import TypedDict, Final
+from typing import Final, TypedDict
 
-from aws_lambda_powertools.utilities.typing import LambdaContext
-from aws_lambda_powertools import Logger
-import requests
 import polars as pl
+import requests
+from aws_lambda_powertools import Logger
+from aws_lambda_powertools.utilities.typing import LambdaContext
 
 logger = Logger()
 

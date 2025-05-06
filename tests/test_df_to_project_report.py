@@ -1,12 +1,13 @@
-import pytest
-
 import sys
 
+import pytest
+
 sys.path.append("..")
-from lambda_function import df_to_project_report, WeeklyProjectReport, ManHour
+from typing import TypeAlias
+
 import polars as pl
 
-from typing import TypeAlias
+from lambda_function import ManHour, WeeklyProjectReport, df_to_project_report
 
 Df: TypeAlias = pl.DataFrame
 
