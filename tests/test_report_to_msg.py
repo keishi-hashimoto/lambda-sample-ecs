@@ -124,6 +124,102 @@ Df: TypeAlias = pl.DataFrame
             """,
             id="Two projects, two members for each.",
         ),
+        pytest.param(
+            [
+                WeeklyProjectReport(
+                    project_code="A001",
+                    name="開発案件A",
+                    man_hours=[
+                        ManHour(name="太郎", hour=4.0),
+                    ],
+                ),
+                WeeklyProjectReport(
+                    project_code="B001",
+                    name="開発案件B",
+                    man_hours=[
+                        ManHour(name="次郎", hour=1.53),
+                    ],
+                ),
+            ],
+            """
+            # 工数週次レポート
+            
+            ## [A001] 開発案件A
+            
+            - 太郎 さん: 4.0 時間
+            - **合計: 4.0 時間**
+            
+            ## [B001] 開発案件B
+            
+            - 次郎 さん: 1.53 時間
+            - **合計: 1.53 時間**
+            """,
+            id="If with two decimal places, displayed man hour is not rounded.",
+        ),
+        pytest.param(
+            [
+                WeeklyProjectReport(
+                    project_code="A001",
+                    name="開発案件A",
+                    man_hours=[
+                        ManHour(name="太郎", hour=4.0),
+                    ],
+                ),
+                WeeklyProjectReport(
+                    project_code="B001",
+                    name="開発案件B",
+                    man_hours=[
+                        ManHour(name="次郎", hour=1.50),
+                    ],
+                ),
+            ],
+            """
+            # 工数週次レポート
+            
+            ## [A001] 開発案件A
+            
+            - 太郎 さん: 4.0 時間
+            - **合計: 4.0 時間**
+            
+            ## [B001] 開発案件B
+            
+            - 次郎 さん: 1.5 時間
+            - **合計: 1.5 時間**
+            """,
+            id="If value of two decimal places is zero, it will be omitted.",
+        ),
+        pytest.param(
+            [
+                WeeklyProjectReport(
+                    project_code="A001",
+                    name="開発案件A",
+                    man_hours=[
+                        ManHour(name="太郎", hour=4.012),
+                    ],
+                ),
+                WeeklyProjectReport(
+                    project_code="B001",
+                    name="開発案件B",
+                    man_hours=[
+                        ManHour(name="次郎", hour=1.516),
+                    ],
+                ),
+            ],
+            """
+            # 工数週次レポート
+            
+            ## [A001] 開発案件A
+            
+            - 太郎 さん: 4.01 時間
+            - **合計: 4.01 時間**
+            
+            ## [B001] 開発案件B
+            
+            - 次郎 さん: 1.52 時間
+            - **合計: 1.52 時間**
+            """,
+            id="If with three decimal places, it will be rounded.",
+        ),
     ],
 )
 def test(reports: list[WeeklyProjectReport], expected: str):
