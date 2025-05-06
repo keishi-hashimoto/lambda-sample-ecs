@@ -169,7 +169,7 @@ def _upsert(
 
 
 def df_to_project_report(df: pl.DataFrame) -> list[WeeklyProjectReport]:
-    dicts_from_df: list[DictFromDf] = df.to_dicts()
+    dicts_from_df: list[DictFromDf] = df.to_dicts()  # type: ignore [assignment]
     weekly_project_report_list: list[WeeklyProjectReport] = []
     for d in dicts_from_df:
         weekly_project_report_list = _upsert(d, weekly_project_report_list)
