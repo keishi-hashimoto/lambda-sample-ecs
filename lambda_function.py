@@ -199,6 +199,10 @@ def handler(event: S3Event, context: LambdaContext):
     s3_info = event["Records"][0]["s3"]
     df = read_csv_file(bucket=s3_info["bucket"]["name"], key=s3_info["object"]["key"])
 
+    project_map_bucket = environ["PROJECT_MAP_BUCKET"]
+    project_map_key = environ["PROJECT_MAP_KEY"]
+    project_map_df = read_csv_file(bucket=project_map_bucket, key=project_map_key)
+
     validate_project_code(df)
 
     processed_df = process_df(df)
