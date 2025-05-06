@@ -127,14 +127,16 @@ def process_df(df: pl.DataFrame) -> pl.DataFrame:
 
 
 def add_project_name_to_df(
-    df: pl.DataFrame, project_map: dict[str, str] = PROJECT_MAP
+    df: pl.DataFrame,
+    project_map_df: pl.DataFrame,
 ) -> pl.DataFrame:
-    df_with_project_name = df.insert_column(
-        1,
-        pl.col(COL_PROJECT_CODE)
-        .replace(project_map)
-        .alias(ADDITIONAL_CON_PROJECT_NAME),
-    )
+    sql = f"""
+        select df.{COL_PROJECT_CODE}, project_map_df.{ADDITIONAL_CON_PROJECT_NAME},
+        df.{COL_MEMBER_NAME}, df.{COL_MAN_HOUR}
+        from df join project_map_df
+        on df.{COL_PROJECT_CODE} = project_map_df.{COL_PROJECT_CODE}
+    """
+    df_with_project_name = pl.sql(sql).collect()
     logger.info(df_with_project_name)
     return df_with_project_name
 
@@ -209,7 +211,7 @@ def handler(event: S3Event, context: LambdaContext):
     validate_project_code(df, project_map_df)
 
     processed_df = process_df(df)
-    df_with_project_name = add_project_name_to_df(processed_df)
+    df_with_project_name = add_project_name_to_df(processed_df, project_map_df)
 
     # TODO: 正規メンバー以外に工数が計上されている場合には警告文を出力する
 
